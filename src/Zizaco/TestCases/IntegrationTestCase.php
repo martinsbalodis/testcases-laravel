@@ -1,8 +1,9 @@
 <?php namespace Zizaco\TestCases;
 
 use Config, App;
+use ReflectionClass;
 
-class IntegrationTestCase extends TestCase
+class IntegrationTestCase extends \TestCase
 {
     static protected $seleniumLaunched = false;
 
@@ -189,7 +190,15 @@ class IntegrationTestCase extends TestCase
         if(IntegrationTestCase::$serverLaunched)
             return;
 
-        $command = "php artisan serve --port 4443";
+        // making sure that the artisan can be found when tests are run with
+        // phpunit, IDE or within development environment
+        $reflector = new ReflectionClass("\\Illuminate\\Foundation\\Testing\\TestCase");
+        $fn = $reflector->getFileName();
+        $testCaseDir = dirname($fn);
+        $artisanDir = $testCaseDir = $testCaseDir."/../../../../../../../";
+
+        $artisan = $artisanDir."artisan";
+        $command = "php $artisan serve --port 4443";
         static::execAsyncAndWaitFor($command, 'development server started');
 
         IntegrationTestCase::$serverLaunched = true;
