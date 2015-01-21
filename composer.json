@@ -1,12 +1,12 @@
 {
-    "name": "zizaco/testcases-laravel",
-    "description": "Some classes to help write tests for laravel 4 applications",
+    "name": "martinsbalodis/testcases-laravel",
+    "description": "Some classes to help write tests for laravel 4 applications. Forked from zizaco/testcases-laravel",
     "keywords": ["laravel","illuminate","test","tdd","testcase","phpunit"],
     "license": "MIT",
     "authors": [
         {
-            "name": "Zizaco Zizuini",
-            "email": "zizaco@gmail.com"
+            "name": "Martins Balodis",
+            "email": "martins256@gmail.com"
         }
     ],
     "require": {
