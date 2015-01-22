@@ -3,7 +3,25 @@ class IntegrationTestCaseTest extends \Zizaco\TestCases\IntegrationTestCase {
 
 	public function testOpenLandingPage() {
 		$this->browser->get("/");
-		$a = 1;
 	}
 
+	public function testAssertBodyHasText() {
+		$this->browser->get("/");
+		$this->assertBodyHasText("You have arrived");
+	}
+
+	public function testAssertBodyHasNotText() {
+		$this->browser->get("/");
+		$this->assertBodyHasNotText("You haven't arrived");
+	}
+
+	public function testAssertBodyHasHtml() {
+		$this->browser->get("/");
+		$this->assertBodyHasHtml("<h1>");
+	}
+
+	public function testAssertBodyHasNotHtml() {
+		$this->browser->get("/");
+		$this->assertBodyHasNotHtml("<h4>");
+	}
 }

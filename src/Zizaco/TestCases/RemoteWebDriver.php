@@ -56,4 +56,14 @@ class RemoteWebDriver extends \RemoteWebDriver {
 		$urlBase = Config::get("app.url");
 		parent::get($urlBase.$url);
 	}
+
+	public function getBodyText() {
+		$text = $this->findElement(WebDriverBy::cssSelector('body'))->getText();
+		return $text;
+	}
+
+	public function getHtmlSource() {
+		$html = $this->findElement(WebDriverBy::cssSelector('html'))->getAttribute("innerHTML");
+		return $html;
+	}
 }

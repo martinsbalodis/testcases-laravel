@@ -144,6 +144,8 @@ class IntegrationTestCase extends \TestCase
         }
         else
         {
+            $this->browser = IntegrationTestCase::$loadedBrowser;
+
             // reset selenium session
             $this->browser->manage()->deleteAllCookies();
 
