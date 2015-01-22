@@ -13,6 +13,9 @@ class IntegrationTestCase extends \TestCase
 
     static protected $seleniumOptions = null;
 
+    /**
+     * @var RemoteWebDriver
+     */
     public $browser;
 
     public static function setSeleniumOptions($options)
@@ -31,7 +34,7 @@ class IntegrationTestCase extends \TestCase
         static::killServer();
         if(IntegrationTestCase::$loadedBrowser)
         {
-            IntegrationTestCase::$loadedBrowser->stop();
+            IntegrationTestCase::$loadedBrowser->close();
             IntegrationTestCase::$loadedBrowser = null;
         }
     }
@@ -134,17 +137,18 @@ class IntegrationTestCase extends \TestCase
 
         if(! IntegrationTestCase::$loadedBrowser)
         {
-            $client  = new \Selenium\Client('localhost', 4444);
-            $this->browser = $client->getBrowser('http://localhost:4443');
-            $this->browser->start();
-            $this->browser->windowMaximize();
+            $capabilities = array(\WebDriverCapabilityType::BROWSER_NAME => 'firefox');
+            $this->browser = RemoteWebDriver::create('http://localhost:4444/wd/hub', $capabilities);
 
             IntegrationTestCase::$loadedBrowser = $this->browser;
         }
         else
         {
+            // reset selenium session
+            $this->browser->manage()->deleteAllCookies();
+
             $this->browser = IntegrationTestCase::$loadedBrowser;
-            $this->browser->open('/');
+            $this->browser->get('/');
         }
         
     }
