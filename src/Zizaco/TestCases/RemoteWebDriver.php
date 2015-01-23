@@ -66,4 +66,11 @@ class RemoteWebDriver extends \RemoteWebDriver {
 		$html = $this->findElement(WebDriverBy::cssSelector('html'))->getAttribute("innerHTML");
 		return $html;
 	}
+
+	public function waitForPageReady() {
+		$this->wait()->until(function ($driver) {
+			/* @var $driver RemoteWebDriver */
+			return !$driver->executeScript('return document.readyState == "complete";');
+		});
+	}
 }
