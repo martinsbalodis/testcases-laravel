@@ -70,7 +70,7 @@ class RemoteWebDriver extends \RemoteWebDriver {
 	public function waitForPageReady() {
 		$this->wait()->until(function ($driver) {
 			/* @var $driver RemoteWebDriver */
-			return !$driver->executeScript('return document.readyState == "complete";');
+			return $driver->executeScript('return document.readyState == "complete";');
 		});
 	}
 }
