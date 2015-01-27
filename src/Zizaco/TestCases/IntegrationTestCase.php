@@ -222,13 +222,13 @@ class IntegrationTestCase extends \TestCase
 
     protected static function killServer()
     {
-        static::killProcessByPort('4443');
-        IntegrationTestCase::$serverLaunched = false;
-
         // print everything that was returned by server
         $output = file_get_contents(IntegrationTestCase::$serverOutputPath);
         echo $output;
         IntegrationTestCase::$serverOutputPath = null;
+
+        static::killProcessByPort('4443');
+        IntegrationTestCase::$serverLaunched = false;
     }
 
     private static function execAsync($command, $output_path = '/dev/null')
