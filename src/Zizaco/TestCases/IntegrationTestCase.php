@@ -13,6 +13,8 @@ class IntegrationTestCase extends \TestCase
 
     static protected $seleniumOptions = null;
 
+    static protected $serverOutputPath = null;
+
     /**
      * @var RemoteWebDriver
      */
@@ -205,8 +207,9 @@ class IntegrationTestCase extends \TestCase
 
         $artisan = $artisanDir."artisan";
         $command = "php $artisan serve --port 4443";
-        static::execAsyncAndWaitFor($command, 'development server started');
+        $outputPath = static::execAsyncAndWaitFor($command, 'development server started');
 
+        IntegrationTestCase::$serverOutputPath = $outputPath;
         IntegrationTestCase::$serverLaunched = true;
     }
 
@@ -220,6 +223,11 @@ class IntegrationTestCase extends \TestCase
     {
         static::killProcessByPort('4443');
         IntegrationTestCase::$serverLaunched = false;
+
+        // print everything that was returned by server
+        $output = file_get_contents(IntegrationTestCase::$serverOutputPath);
+        echo $output;
+        IntegrationTestCase::$serverOutputPath = null;
     }
 
     private static function execAsync($command, $output_path = '/dev/null')
@@ -233,6 +241,7 @@ class IntegrationTestCase extends \TestCase
         $output_path = "/tmp/zizaco-".str_shuffle(MD5(microtime()));
         self::execAsync($command, $output_path);
         self::waitForOutput($output_path, $content, $timeout);
+        return $output_path;
     }
     private static function waitForOutput($file, $output) {
         $found = FALSE;
