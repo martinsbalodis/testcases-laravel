@@ -206,7 +206,8 @@ class IntegrationTestCase extends \TestCase
         $artisanDir = $testCaseDir = $testCaseDir."/../../../../../../../";
 
         $artisan = $artisanDir."artisan";
-        $command = "php $artisan serve --port 4443";
+        // before starting kill previous process if exists
+        $command = "fuser -k 4443/tcp && php $artisan serve --port 4443";
         $outputPath = static::execAsyncAndWaitFor($command, 'development server started');
 
         IntegrationTestCase::$serverOutputPath = $outputPath;
