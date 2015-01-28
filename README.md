@@ -201,3 +201,11 @@ TestCases-Laravel is free software distributed under the terms of the MIT licens
 Any questions, feel free to contact me or ask [here](http://zizaco.net)
 
 Any issues, please [report here](https://github.com/Zizaco/testcases-laravel/issues)
+
+
+## known issues
+
+ * The process killing wont work in a docker image. If you put dockers app armor
+  profile in complain mode then the process killing works. But this might be a 
+  security risk. `sudo aa-complain /etc/apparmor.d/docker` 
+  source: https://unix.stackexchange.com/questions/136690/how-can-i-substitute-lsof-inside-a-docker-native-not-lxc-based
