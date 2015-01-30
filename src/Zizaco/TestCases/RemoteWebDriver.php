@@ -1,6 +1,7 @@
 <?php namespace Zizaco\TestCases;
 
 use Exception;
+use NoSuchElementException;
 use RemoteWebElement;
 use WebDriverBy;
 use Config;
@@ -41,7 +42,24 @@ class RemoteWebDriver extends \RemoteWebDriver {
 			}
 			usleep(100);
 		}
-		throw new Exception("Element NOT present! ".$element);
+		throw new TimeOutException("Element NOT present! ".$element);
+	}
+
+	public function waitForElement($webDriverBy, $timeout = 5000) {
+
+		$timeoutTime = microtime(1)+$timeout/1000;
+		while(microtime(1) < $timeoutTime) {
+
+			try {
+				$this->findElement($webDriverBy);
+				return;
+			}
+			catch(NoSuchElementException $e) {
+
+			}
+			usleep(100);
+		}
+		throw new TimeOutException("Element NOT present!");
 	}
 
 	public function bodyHasText($textSearch) {

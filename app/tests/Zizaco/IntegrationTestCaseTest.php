@@ -24,4 +24,10 @@ class IntegrationTestCaseTest extends \Zizaco\TestCases\IntegrationTestCase {
 		$this->browser->get("/");
 		$this->assertBodyHasNotHtml("<h4>");
 	}
+
+	public function testAssertBodyHasElement() {
+
+		$this->browser->get("/");
+		$this->assertBodyHasElement(WebDriverBy::cssSelector("h1"), 100);
+	}
 }

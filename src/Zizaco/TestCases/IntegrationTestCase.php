@@ -128,6 +128,17 @@ class IntegrationTestCase extends \TestCase
         $this->assertEquals($current_location, $current_location, "The current location ($current_location) is not '$location'");
     }
 
+    public function assertBodyHasElement($webDriverBy, $timeout = 5000) {
+
+        try {
+            $this->browser->waitForElement($webDriverBy, $timeout);
+            $this->assertTrue(true, "Element found");
+        }
+        catch(TimeOutException $e) {
+            $this->fail("Element not found. ".$webDriverBy);
+        }
+    }
+
     protected function startBrowser()
     {
         // Set the Application URL containing the port of the test server
