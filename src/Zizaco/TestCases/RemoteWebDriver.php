@@ -21,9 +21,9 @@ class RemoteWebDriver extends \RemoteWebDriver {
 		return $element;
 	}
 
-	public function waitForAjax() {
+	public function waitForAjax($timeout = 5000) {
 
-		$this->wait()->until(function ($driver) {
+		$this->wait($timeout/1000)->until(function ($driver) {
 			return !$driver->executeScript('return jQuery.active');
 		});
 	}
@@ -45,7 +45,7 @@ class RemoteWebDriver extends \RemoteWebDriver {
 		throw new TimeOutException("Element NOT present! ".$element);
 	}
 
-	public function waitForElement($webDriverBy, $timeout = 5000) {
+	public function waitForElementPresent($webDriverBy, $timeout = 5000) {
 
 		$timeoutTime = microtime(1)+$timeout/1000;
 		while(microtime(1) < $timeoutTime) {
@@ -56,6 +56,22 @@ class RemoteWebDriver extends \RemoteWebDriver {
 			}
 			catch(NoSuchElementException $e) {
 
+			}
+			usleep(100);
+		}
+		throw new TimeOutException("Element NOT present!");
+	}
+
+	public function waitForElementNotPresent($webDriverBy, $timeout = 5000) {
+
+		$timeoutTime = microtime(1)+$timeout/1000;
+		while(microtime(1) < $timeoutTime) {
+
+			try {
+				$this->findElement($webDriverBy);
+			}
+			catch(NoSuchElementException $e) {
+				return;
 			}
 			usleep(100);
 		}

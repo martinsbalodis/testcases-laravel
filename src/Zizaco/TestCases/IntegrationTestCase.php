@@ -131,11 +131,22 @@ class IntegrationTestCase extends \TestCase
     public function assertBodyHasElement($webDriverBy, $timeout = 5000) {
 
         try {
-            $this->browser->waitForElement($webDriverBy, $timeout);
+            $this->browser->waitForElementPresent($webDriverBy, $timeout);
             $this->assertTrue(true, "Element found");
         }
         catch(TimeOutException $e) {
             $this->fail("Element not found. ".$webDriverBy);
+        }
+    }
+
+    public function assertBodyHasNotElement($webDriverBy, $timeout = 5000) {
+
+        try {
+            $this->browser->waitForElementNotPresent($webDriverBy, $timeout);
+            $this->assertTrue(true, "Element not found");
+        }
+        catch(TimeOutException $e) {
+            $this->fail("Element found. ".$webDriverBy);
         }
     }
 
