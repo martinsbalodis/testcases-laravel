@@ -107,4 +107,15 @@ class RemoteWebDriver extends \RemoteWebDriver {
 			return $driver->executeScript('return document.readyState == "complete";');
 		});
 	}
+
+	/**
+	 * Element selection with jquery
+	 *
+	 * @param $selector
+	 * @return RemoteWebElement
+	 * @throws Exception
+	 */
+	public function css($selector) {
+		return $this->findElementByjQuery($selector);
+	}
 }
