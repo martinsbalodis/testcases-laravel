@@ -45,6 +45,23 @@ class RemoteWebDriver extends \RemoteWebDriver {
 		throw new TimeOutException("Element NOT present! ".$element);
 	}
 
+	public function waitForElementNotVisible($element) {
+
+		if($element instanceof WebDriverBy) {
+			$element = $this->findElement($element);
+		}
+
+		$timeout = 5000;
+		$timeoutTime = microtime(1)+$timeout/1000;
+		while(microtime(1) < $timeoutTime) {
+			if(!$element->isDisplayed()) {
+				return;
+			}
+			usleep(100);
+		}
+		throw new TimeOutException("Element is still visible present! ");
+	}
+
 	public function waitForElementPresent($webDriverBy, $timeout = 5000) {
 
 		$timeoutTime = microtime(1)+$timeout/1000;

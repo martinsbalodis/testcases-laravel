@@ -150,6 +150,28 @@ class IntegrationTestCase extends \TestCase
         }
     }
 
+	public function assertBodyHasVisibleElement($element, $timeout = 5000) {
+
+		try {
+			$this->browser->waitForElementVisible($element, $timeout);
+			$this->assertTrue(true, "Element found");
+		}
+		catch(TimeOutException $e) {
+			$this->fail("Element not found. ");
+		}
+	}
+
+	public function assertBodyHasNotVisibleElement($element, $timeout = 5000) {
+
+		try {
+			$this->browser->waitForElementNotVisible($element, $timeout);
+			$this->assertTrue(true, "Element found");
+		}
+		catch(TimeOutException $e) {
+			$this->fail("Element is still visible. ");
+		}
+	}
+
     protected function startBrowser()
     {
         // Set the Application URL containing the port of the test server
