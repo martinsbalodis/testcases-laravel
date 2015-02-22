@@ -3,7 +3,7 @@
 use Config, App;
 use ReflectionClass;
 
-class IntegrationTestCase extends \TestCase
+abstract class IntegrationTestCase extends \TestCase
 {
     static protected $seleniumLaunched = false;
 
