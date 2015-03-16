@@ -45,6 +45,23 @@ class RemoteWebDriver extends \RemoteWebDriver {
 		throw new TimeOutException("Element NOT present! ".$element);
 	}
 
+	public function waitForElementNotVisible($element) {
+
+		if($element instanceof WebDriverBy) {
+			$element = $this->findElement($element);
+		}
+
+		$timeout = 5000;
+		$timeoutTime = microtime(1)+$timeout/1000;
+		while(microtime(1) < $timeoutTime) {
+			if(!$element->isDisplayed()) {
+				return;
+			}
+			usleep(100);
+		}
+		throw new TimeOutException("Element is still visible present! ");
+	}
+
 	public function waitForElementPresent($webDriverBy, $timeout = 5000) {
 
 		$timeoutTime = microtime(1)+$timeout/1000;
@@ -106,5 +123,16 @@ class RemoteWebDriver extends \RemoteWebDriver {
 			/* @var $driver RemoteWebDriver */
 			return $driver->executeScript('return document.readyState == "complete";');
 		});
+	}
+
+	/**
+	 * Element selection with jquery
+	 *
+	 * @param $selector
+	 * @return RemoteWebElement
+	 * @throws Exception
+	 */
+	public function css($selector) {
+		return $this->findElementByjQuery($selector);
 	}
 }

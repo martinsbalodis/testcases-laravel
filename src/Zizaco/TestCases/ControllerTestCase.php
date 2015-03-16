@@ -3,7 +3,7 @@
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Route, Config, URL, Session;
 
-class ControllerTestCase extends TestCase{
+abstract class ControllerTestCase extends \TestCase {
 
     /**
      * Will contain the parameters of the next request

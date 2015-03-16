@@ -3,7 +3,7 @@
 use Config, App;
 use ReflectionClass;
 
-class IntegrationTestCase extends \TestCase
+abstract class IntegrationTestCase extends \TestCase
 {
     static protected $seleniumLaunched = false;
 
@@ -149,6 +149,28 @@ class IntegrationTestCase extends \TestCase
             $this->fail("Element found. ".$webDriverBy);
         }
     }
+
+	public function assertBodyHasVisibleElement($element, $timeout = 5000) {
+
+		try {
+			$this->browser->waitForElementVisible($element, $timeout);
+			$this->assertTrue(true, "Element found");
+		}
+		catch(TimeOutException $e) {
+			$this->fail("Element not found. ");
+		}
+	}
+
+	public function assertBodyHasNotVisibleElement($element, $timeout = 5000) {
+
+		try {
+			$this->browser->waitForElementNotVisible($element, $timeout);
+			$this->assertTrue(true, "Element found");
+		}
+		catch(TimeOutException $e) {
+			$this->fail("Element is still visible. ");
+		}
+	}
 
     protected function startBrowser()
     {
