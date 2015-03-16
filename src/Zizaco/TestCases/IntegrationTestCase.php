@@ -20,6 +20,14 @@ abstract class IntegrationTestCase extends \TestCase
      */
     public $browser;
 
+    /**
+     * Get the simplified page client
+     * @return SimpleRemoteWebDriver
+     */
+    public function simple() {
+        return new SimpleRemoteWebDriver($this->browser);
+    }
+
     public static function setSeleniumOptions($options)
     {
         self::$seleniumOptions = $options;
