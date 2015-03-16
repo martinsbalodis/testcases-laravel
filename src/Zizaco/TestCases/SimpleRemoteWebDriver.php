@@ -33,7 +33,7 @@ class SimpleRemoteWebDriver extends \RemoteWebDriver {
 	public function click($cssSelector) {
 
 		$element = $this->browser->findElementByjQuery($cssSelector);
-		$this->browser->waitForElementVisible($element);
+		$this->browser->waitForElementVisible($cssSelector);
 		$element->click();
 		$this->browser->waitForAjax(3e4);
 
@@ -52,7 +52,7 @@ class SimpleRemoteWebDriver extends \RemoteWebDriver {
 	public function type($cssSelector, $text) {
 
 		$element = $this->browser->findElementByjQuery($cssSelector);
-		$this->browser->waitForElementVisible($element);
+		$this->browser->waitForElementVisible($cssSelector);
 		// clear input before inputting new keys
 		$element->clear();
 		$element->sendKeys($text);
