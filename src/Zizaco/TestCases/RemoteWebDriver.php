@@ -14,7 +14,7 @@ class RemoteWebDriver extends \RemoteWebDriver {
 
 		$elements = $this->executeScript('return jQuery("'.$cssSelector.'").get()');
 		if(empty($elements)) {
-			throw new NoSuchElementException("elements not found!");
+			throw new NoSuchElementException("element not found! ".$cssSelector);
 		}
 
 		$id = $elements[0]['ELEMENT'];
