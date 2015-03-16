@@ -155,7 +155,7 @@ class IntegrationTestCase extends \TestCase
         // Set the Application URL containing the port of the test server
         Config::set(
             'app.url',
-            Config::get('app.url').':4443'
+            'http://localhost:4443'
         );
         App::setRequestForConsoleEnvironment(); // This is a must
 
