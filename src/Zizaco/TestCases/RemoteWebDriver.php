@@ -14,7 +14,7 @@ class RemoteWebDriver extends \RemoteWebDriver {
 
 		$elements = $this->executeScript('return jQuery("'.$cssSelector.'").get()');
 		if(empty($elements)) {
-			throw new Exception("elements not found!");
+			throw new NoSuchElementException("elements not found!");
 		}
 
 		$id = $elements[0]['ELEMENT'];
@@ -30,47 +30,54 @@ class RemoteWebDriver extends \RemoteWebDriver {
 		});
 	}
 
-	public function waitForElementVisible($element) {
-
-		if($element instanceof WebDriverBy) {
-			$element = $this->findElement($element);
-		}
-
-		$timeout = 5000;
-		$timeoutTime = microtime(1)+$timeout/1000;
-		while(microtime(1) < $timeoutTime) {
-			if($element->isDisplayed()) {
-				return;
-			}
-			usleep(100);
-		}
-		throw new TimeOutException("Element NOT present! ".$element);
-	}
-
-	public function waitForElementNotVisible($element) {
-
-		if($element instanceof WebDriverBy) {
-			$element = $this->findElement($element);
-		}
-
-		$timeout = 5000;
-		$timeoutTime = microtime(1)+$timeout/1000;
-		while(microtime(1) < $timeoutTime) {
-			if(!$element->isDisplayed()) {
-				return;
-			}
-			usleep(100);
-		}
-		throw new TimeOutException("Element is still visible present! ");
-	}
-
-	public function waitForElementPresent($webDriverBy, $timeout = 5000) {
+	public function waitForElementVisible($cssSelector, $timeout = 5000) {
 
 		$timeoutTime = microtime(1)+$timeout/1000;
 		while(microtime(1) < $timeoutTime) {
 
 			try {
-				$this->findElement($webDriverBy);
+				$element = $this->findElementByjQuery($cssSelector);
+				if($element->isDisplayed()) {
+					return;
+				}
+			}
+			catch(NoSuchElementException $e) {
+
+			}
+
+			usleep(100);
+		}
+		throw new TimeOutException("Element NOT present! ".$cssSelector);
+	}
+
+	public function waitForElementNotVisible($cssSelector, $timeout = 5000) {
+
+		$timeoutTime = microtime(1)+$timeout/1000;
+		while(microtime(1) < $timeoutTime) {
+
+			try {
+				$element = $this->findElementByjQuery($cssSelector);
+				if(!$element->isDisplayed()) {
+					return;
+				}
+			}
+			// element not found so it's not visible
+			catch(NoSuchElementException $e) {
+				return;
+			}
+
+			usleep(100);
+		}
+		throw new TimeOutException("Element is still visible present! ");
+	}
+
+	public function waitForElementPresent($cssSelector, $timeout = 5000) {
+
+		$timeoutTime = microtime(1)+$timeout/1000;
+		while(microtime(1) < $timeoutTime) {
+
+			try {
+				$this->findElementByjQuery($cssSelector);
 				return;
 			}
 			catch(NoSuchElementException $e) {
@@ -81,13 +88,13 @@ class RemoteWebDriver extends \RemoteWebDriver {
 		throw new TimeOutException("Element NOT present!");
 	}
 
-	public function waitForElementNotPresent($webDriverBy, $timeout = 5000) {
+	public function waitForElementNotPresent($cssSelector, $timeout = 5000) {
 
 		$timeoutTime = microtime(1)+$timeout/1000;
 		while(microtime(1) < $timeoutTime) {
 
 			try {
-				$this->findElement($webDriverBy);
+				$this->findElementByjQuery($cssSelector);
 			}
 			catch(NoSuchElementException $e) {
 				return;

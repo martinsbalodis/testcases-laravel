@@ -136,32 +136,32 @@ abstract class IntegrationTestCase extends \TestCase
         $this->assertEquals($current_location, $current_location, "The current location ($current_location) is not '$location'");
     }
 
-    public function assertBodyHasElement($webDriverBy, $timeout = 5000) {
+    public function assertBodyHasElement($cssSelector, $timeout = 5000) {
 
         try {
-            $this->browser->waitForElementPresent($webDriverBy, $timeout);
+            $this->browser->waitForElementPresent($cssSelector, $timeout);
             $this->assertTrue(true, "Element found");
         }
         catch(TimeOutException $e) {
-            $this->fail("Element not found. ".$webDriverBy);
+            $this->fail("Element not found. ".$cssSelector);
         }
     }
 
-    public function assertBodyHasNotElement($webDriverBy, $timeout = 5000) {
+    public function assertBodyHasNotElement($cssSelector, $timeout = 5000) {
 
         try {
-            $this->browser->waitForElementNotPresent($webDriverBy, $timeout);
+            $this->browser->waitForElementNotPresent($cssSelector, $timeout);
             $this->assertTrue(true, "Element not found");
         }
         catch(TimeOutException $e) {
-            $this->fail("Element found. ".$webDriverBy);
+            $this->fail("Element found. ".$cssSelector);
         }
     }
 
-	public function assertBodyHasVisibleElement($element, $timeout = 5000) {
+	public function assertBodyHasVisibleElement($cssSelector, $timeout = 5000) {
 
 		try {
-			$this->browser->waitForElementVisible($element, $timeout);
+			$this->browser->waitForElementVisible($cssSelector, $timeout);
 			$this->assertTrue(true, "Element found");
 		}
 		catch(TimeOutException $e) {
@@ -169,10 +169,10 @@ abstract class IntegrationTestCase extends \TestCase
 		}
 	}
 
-	public function assertBodyHasNotVisibleElement($element, $timeout = 5000) {
+	public function assertBodyHasNotVisibleElement($cssSelector, $timeout = 5000) {
 
 		try {
-			$this->browser->waitForElementNotVisible($element, $timeout);
+			$this->browser->waitForElementNotVisible($cssSelector, $timeout);
 			$this->assertTrue(true, "Element found");
 		}
 		catch(TimeOutException $e) {

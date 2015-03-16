@@ -28,12 +28,24 @@ class IntegrationTestCaseTest extends \Zizaco\TestCases\IntegrationTestCase {
 	public function testAssertBodyHasElement() {
 
 		$this->browser->get("/");
-		$this->assertBodyHasElement(WebDriverBy::cssSelector("h1"), 100);
+		$this->assertBodyHasElement("h1", 100);
 	}
 
 	public function testAssertBodyHasNotElement() {
 
 		$this->browser->get("/");
-		$this->assertBodyHasNotElement(WebDriverBy::cssSelector("h5"), 100);
+		$this->assertBodyHasNotElement("h5", 100);
+	}
+
+	public function testAssertBodyHasVisibleElement() {
+
+		$this->browser->get("/");
+		$this->assertBodyHasVisibleElement("h1", 100);
+	}
+
+	public function testAassertBodyHasNotVisibleElement() {
+
+		$this->browser->get("/");
+		$this->assertBodyHasNotVisibleElement(".hidden", 100);
 	}
 }

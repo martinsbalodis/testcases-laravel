@@ -41,6 +41,7 @@
 
 		<button onclick="$('body').append('<div>clicked!</div>')"></button>
 		<input type="text" value="remove text">
+		<div class="hidden" style="display:none">asd</div>
 	</div>
 </body>
 </html>
