@@ -53,8 +53,10 @@ class SimpleRemoteWebDriver extends \RemoteWebDriver {
 
 		$element = $this->browser->findElementByjQuery($cssSelector);
 		$this->browser->waitForElementVisible($element);
+		// clear input before inputting new keys
+		$element->clear();
 		$element->sendKeys($text);
-		// @TODO trigger keyup, change
+		$this->browser->executeScript('jQuery("'.$cssSelector.'").trigger("keyup").trigger("change")');
 		$this->browser->waitForAjax(3e4);
 
 		return $this;

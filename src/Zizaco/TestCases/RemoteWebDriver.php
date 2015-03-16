@@ -10,6 +10,8 @@ class RemoteWebDriver extends \RemoteWebDriver {
 
 	public function findElementByjQuery($cssSelector) {
 
+		// @TODO escape double quotes
+
 		$elements = $this->executeScript('return jQuery("'.$cssSelector.'").get()');
 		if(empty($elements)) {
 			throw new Exception("elements not found!");

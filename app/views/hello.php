@@ -40,7 +40,7 @@
 		<h1>You have arrived.</h1>
 
 		<button onclick="$('body').append('<div>clicked!</div>')"></button>
-		<input type="text">
+		<input type="text" value="remove text">
 	</div>
 </body>
 </html>
