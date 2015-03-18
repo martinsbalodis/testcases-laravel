@@ -55,8 +55,10 @@ class SimpleRemoteWebDriver {
 
 		$this->browser->waitForElementVisible($cssSelector);
 		$element = $this->browser->findElementByjQuery($cssSelector);
-		// clear input before inputting new keys
-		$element->clear();
+		// clear input before inputting new keys. Do not clear file input.
+		if($element->getAttribute("type") !== 'file') {
+			$element->clear();
+		}
 		$element->sendKeys($text);
 		$this->browser->executeScript('jQuery("'.$cssSelector.'").trigger("keyup").trigger("change")');
 		$this->browser->waitForAjax(3e4);

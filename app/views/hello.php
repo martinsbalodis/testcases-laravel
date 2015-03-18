@@ -41,6 +41,7 @@
 
 		<button onclick="$('body').append('<div>clicked!</div>')"></button>
 		<input type="text" value="remove text">
+		<input type="file" class="input-file">
 		<div class="hidden" style="display:none">asd</div>
 	</div>
 </body>
