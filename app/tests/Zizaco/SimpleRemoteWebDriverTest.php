@@ -18,4 +18,10 @@ class SimpleRemoteWebDriverTest extends \Zizaco\TestCases\IntegrationTestCase {
 		$value = $this->browser->executeScript('return jQuery("input").val()');
 		$this->assertEquals("asd", $value);
 	}
+
+	public function testExecuteScript() {
+
+		$response = $this->simple()->get("/")->executeScript("return 1+2;")->lastScriptResponse;
+		$this->assertEquals(3, $response);
+	}
 }

@@ -6,7 +6,9 @@
  * @package Zizaco\TestCases
  * @property RemoteWebDriver $browser
  */
-class SimpleRemoteWebDriver extends \RemoteWebDriver {
+class SimpleRemoteWebDriver {
+
+	public $lastScriptResponse = null;
 
 	public function __construct(RemoteWebDriver $browser) {
 		$this->browser = $browser;
@@ -62,4 +64,19 @@ class SimpleRemoteWebDriver extends \RemoteWebDriver {
 		return $this;
 	}
 
+	/**
+	 * Execute script. Response is not returned!
+	 *
+	 * @param $script
+	 * @param array $arguments
+	 * @return $this
+	 */
+	public function executeScript($script, $arguments = array()) {
+
+		$response = $this->browser->executeScript($script, $arguments);
+		$this->lastScriptResponse = $response;
+		$this->browser->waitForAjax(3e4);
+
+		return $this;
+	}
 }
