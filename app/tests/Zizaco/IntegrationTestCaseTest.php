@@ -48,4 +48,14 @@ class IntegrationTestCaseTest extends \Zizaco\TestCases\IntegrationTestCase {
 		$this->browser->get("/");
 		$this->assertBodyHasNotVisibleElement(".hidden", 100);
 	}
+
+	public function testAssertElementHasText() {
+		$this->browser->get("/");
+		$this->assertElementHasText("h1", "You");
+	}
+
+	public function testAssertElementHasNotText() {
+		$this->browser->get("/");
+		$this->assertElementHasNotText("h1", "asdasdasdasd");
+	}
 }

@@ -78,9 +78,9 @@ abstract class IntegrationTestCase extends \TestCase
         }
     }
 
-    public function assertElementHasText($locator, $needle)
+    public function assertElementHasText($cssSelector, $needle)
     {
-        $text = $this->browser->getText($locator);
+        $text = $this->browser->findElementByjQuery($cssSelector)->getText();
 
         $needle = (array)$needle;
 
@@ -89,9 +89,9 @@ abstract class IntegrationTestCase extends \TestCase
         }
     }
 
-    public function assertElementHasNotText($locator, $needle)
+    public function assertElementHasNotText($cssSelector, $needle)
     {
-        $text = $this->browser->getText($locator);
+        $text = $this->browser->findElementByjQuery($cssSelector)->getText();
 
         $needle = (array)$needle;
 
