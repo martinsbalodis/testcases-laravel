@@ -1,4 +1,5 @@
 <?php namespace Zizaco\TestCases;
+use WebDriverSelect;
 
 /**
  * Class SimpleRemoteWebDriver
@@ -78,6 +79,22 @@ class SimpleRemoteWebDriver {
 		$response = $this->browser->executeScript($script, $arguments);
 		$this->lastScriptResponse = $response;
 		$this->browser->waitForAjax(3e4);
+
+		return $this;
+	}
+
+	/**
+	 * Select an option from a select by value
+	 * @param $cssSelector
+	 * @param $value
+	 * @return $this
+	 */
+	public function select($cssSelector, $value) {
+
+		$this->browser->waitForElementVisible($cssSelector);
+		$element = $this->browser->findElementByjQuery($cssSelector);
+		$selection = new WebDriverSelect($element);
+		$selection->selectByValue($value);
 
 		return $this;
 	}

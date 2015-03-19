@@ -42,6 +42,11 @@
 		<button onclick="$('body').append('<div>clicked!</div>')"></button>
 		<input type="text" value="remove text">
 		<input type="file" class="input-file">
+		<select id="select-me">
+			<option value="1" selected="selected">1</option>
+			<option value="2">2</option>
+			<option value="3">3</option>
+		</select>
 		<div class="hidden" style="display:none">asd</div>
 	</div>
 </body>

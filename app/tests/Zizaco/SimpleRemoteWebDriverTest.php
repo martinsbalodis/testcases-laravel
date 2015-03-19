@@ -33,4 +33,16 @@ class SimpleRemoteWebDriverTest extends \Zizaco\TestCases\IntegrationTestCase {
 		$response = $this->simple()->get("/")->executeScript("return 1+2;")->lastScriptResponse;
 		$this->assertEquals(3, $response);
 	}
+
+	public function testSelect() {
+		$this->simple()->get("/");
+
+		$value = $this->simple()->executeScript("return $('#select-me').val()")->lastScriptResponse;
+		$this->assertEquals(1, $value);
+
+		$this->simple()->select('#select-me', 2);
+
+		$value = $this->simple()->executeScript("return $('#select-me').val()")->lastScriptResponse;
+		$this->assertEquals(2, $value);
+	}
 }
