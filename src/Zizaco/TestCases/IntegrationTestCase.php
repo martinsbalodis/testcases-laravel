@@ -1,6 +1,7 @@
 <?php namespace Zizaco\TestCases;
 
 use Config, App;
+use DesiredCapabilities;
 use ReflectionClass;
 
 abstract class IntegrationTestCase extends \TestCase
@@ -191,7 +192,7 @@ abstract class IntegrationTestCase extends \TestCase
 
         if(! IntegrationTestCase::$loadedBrowser)
         {
-            $capabilities = array(\WebDriverCapabilityType::BROWSER_NAME => 'firefox');
+            $capabilities = DesiredCapabilities::chrome();
             $this->browser = RemoteWebDriver::create('http://localhost:4444/wd/hub', $capabilities);
 
             IntegrationTestCase::$loadedBrowser = $this->browser;
