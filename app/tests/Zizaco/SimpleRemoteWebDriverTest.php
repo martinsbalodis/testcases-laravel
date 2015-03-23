@@ -12,6 +12,11 @@ class SimpleRemoteWebDriverTest extends \Zizaco\TestCases\IntegrationTestCase {
 		$this->assertBodyHasText("clicked!");
 	}
 
+	public function testCheckCheckbox() {
+
+		$this->simple()->get("/")->click(".checkbox");
+	}
+
 	public function testType() {
 
 		$this->simple()->get("/")->type("input", "asd");

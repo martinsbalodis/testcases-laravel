@@ -1,4 +1,5 @@
 <?php namespace Zizaco\TestCases;
+use UnknownServerException;
 use WebDriverSelect;
 
 /**
@@ -37,7 +38,22 @@ class SimpleRemoteWebDriver {
 
 		$this->browser->waitForElementVisible($cssSelector);
 		$element = $this->browser->findElementByjQuery($cssSelector);
-		$element->click();
+		$error = false;
+		do {
+			try {
+				$element->click();
+				$error = false;
+			}
+			catch(UnknownServerException $e) {
+				if(str_contains("Element is not clickable at point", $e->getMessage())) {
+					$error = true;
+				}
+				usleep(1e5);
+			}
+		}
+		while($error);
+		// clicks are too fast
+		usleep(3e5);
 		$this->browser->waitForAjax(3e4);
 
 		return $this;

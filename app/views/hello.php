@@ -47,6 +47,7 @@
 			<option value="2">2</option>
 			<option value="3">3</option>
 		</select>
+		<input type="checkbox" class="checkbox">
 		<div class="hidden" style="display:none">asd</div>
 	</div>
 </body>
