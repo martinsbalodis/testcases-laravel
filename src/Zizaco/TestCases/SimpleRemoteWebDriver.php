@@ -45,7 +45,7 @@ class SimpleRemoteWebDriver {
 				$error = false;
 			}
 			catch(UnknownServerException $e) {
-				if(str_contains("Element is not clickable at point", $e->getMessage())) {
+				if(str_contains($e->getMessage(), "Element is not clickable at point")) {
 					$error = true;
 				}
 				usleep(1e5);
