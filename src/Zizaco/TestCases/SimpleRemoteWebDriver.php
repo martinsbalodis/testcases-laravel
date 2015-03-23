@@ -61,6 +61,8 @@ class SimpleRemoteWebDriver {
 			$element->clear();
 		}
 		$element->sendKeys($text);
+		// chrome doesn't type fast enough :(
+		usleep(3e5);
 		$this->browser->executeScript('jQuery("'.$cssSelector.'").trigger("keyup").trigger("change")');
 		$this->browser->waitForAjax(3e4);
 
