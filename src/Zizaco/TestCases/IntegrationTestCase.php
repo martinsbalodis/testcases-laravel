@@ -192,7 +192,7 @@ abstract class IntegrationTestCase extends \TestCase
 
         if(! IntegrationTestCase::$loadedBrowser)
         {
-            $capabilities = DesiredCapabilities::chrome();
+            $capabilities = DesiredCapabilities::firefox();
             $this->browser = RemoteWebDriver::create('http://localhost:4444/wd/hub', $capabilities);
 
             IntegrationTestCase::$loadedBrowser = $this->browser;
