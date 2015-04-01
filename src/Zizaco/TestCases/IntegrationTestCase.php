@@ -262,6 +262,7 @@ abstract class IntegrationTestCase extends \TestCase
         // before starting kill previous process if exists
         static::killProcessByPort('4443');
         $command = "php $artisan serve --port 4443";
+        $command = "(export TESTCASES_LARAVEL=1; $command)";
         $outputPath = static::execAsyncAndWaitFor($command, 'development server started');
 
         IntegrationTestCase::$serverOutputPath = $outputPath;
