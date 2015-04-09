@@ -3,6 +3,7 @@
 use Exception;
 use NoSuchElementException;
 use RemoteWebElement;
+use UnknownServerException;
 use WebDriverBy;
 use Config;
 
@@ -143,5 +144,15 @@ class RemoteWebDriver extends \RemoteWebDriver {
 	 */
 	public function css($selector) {
 		return $this->findElementByjQuery($selector);
+	}
+
+	public function close() {
+		try {
+			parent::close();
+		}
+		catch(UnknownServerException $e) {
+			// Sometimes webdriver loses connection with with browser.
+			// We don't need the browser anymore. yolo
+		}
 	}
 }
