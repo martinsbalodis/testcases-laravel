@@ -72,13 +72,29 @@ class SimpleRemoteWebDriver {
 
 		$this->browser->waitForElementVisible($cssSelector);
 		$element = $this->browser->findElementByjQuery($cssSelector);
-		// clear input before inputting new keys. Do not clear file input.
-		if($element->getAttribute("type") !== 'file') {
-			$element->clear();
+
+		// try multiple times inputing the data if something fails the first time
+		for($i = 0;$i<=10;$i++) {
+			// clear input before inputting new keys. Do not clear file input.
+			if($element->getAttribute("type") !== 'file') {
+				$element->clear();
+			}
+
+			$element->sendKeys($text);
+			// chrome doesn't type fast enough :(
+			usleep(3e5);
+
+			$inputValue = $element->getAttribute("value");
+			if($inputValue === $text) {
+				break;
+			}
+			else if($element->getAttribute("type") === 'file' || str_contains($text, $inputValue)) {
+				break;
+			}
+			else {
+				usleep(1e5);
+			}
 		}
-		$element->sendKeys($text);
-		// chrome doesn't type fast enough :(
-		usleep(3e5);
 		$this->browser->executeScript('jQuery("'.$cssSelector.'").trigger("keyup").trigger("change")');
 		$this->browser->waitForAjax(3e4);
 
