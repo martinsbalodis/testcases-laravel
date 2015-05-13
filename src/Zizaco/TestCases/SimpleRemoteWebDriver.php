@@ -82,17 +82,17 @@ class SimpleRemoteWebDriver {
 
 			$element->sendKeys($text);
 			// chrome doesn't type fast enough :(
-			usleep(3e5);
-
-			$inputValue = $element->getAttribute("value");
-			if($inputValue === $text) {
-				break;
-			}
-			else if($element->getAttribute("type") === 'file' || str_contains($text, $inputValue)) {
-				break;
-			}
-			else {
-				usleep(1e5);
+			for($j=1;$j!=4;$j++) {
+				$inputValue = $element->getAttribute("value");
+				if($inputValue === $text) {
+					break 2;
+				}
+				else if($element->getAttribute("type") === 'file' || str_contains($text, $inputValue)) {
+					break 2;
+				}
+				else {
+					usleep(1e5);
+				}
 			}
 		}
 		$this->browser->executeScript('jQuery("'.$cssSelector.'").trigger("keyup").trigger("change")');
