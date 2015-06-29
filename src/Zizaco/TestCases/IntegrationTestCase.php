@@ -183,11 +183,11 @@ abstract class IntegrationTestCase extends \TestCase
 
     protected function startBrowser()
     {
-        // Set the Application URL containing the port of the test server
-        Config::set(
-            'app.url',
-            'http://localhost:4443'
-        );
+//        // Set the Application URL containing the port of the test server
+//        Config::set(
+//            'app.url',
+//            'http://localhost:4443'
+//        );
         App::setRequestForConsoleEnvironment(); // This is a must
 
         if(! IntegrationTestCase::$loadedBrowser)
