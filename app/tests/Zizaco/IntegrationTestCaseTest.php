@@ -2,60 +2,60 @@
 class IntegrationTestCaseTest extends \Zizaco\TestCases\IntegrationTestCase {
 
 	public function testOpenLandingPage() {
-		$this->browser->get("/");
+		S::get("/");
 	}
 
 	public function testAssertBodyHasText() {
-		$this->browser->get("/");
+		S::get("/");
 		$this->assertBodyHasText("You have arrived");
 	}
 
 	public function testAssertBodyHasNotText() {
-		$this->browser->get("/");
+		S::get("/");
 		$this->assertBodyHasNotText("You haven't arrived");
 	}
 
 	public function testAssertBodyHasHtml() {
-		$this->browser->get("/");
+		S::get("/");
 		$this->assertBodyHasHtml("<h1>");
 	}
 
 	public function testAssertBodyHasNotHtml() {
-		$this->browser->get("/");
+		S::get("/");
 		$this->assertBodyHasNotHtml("<h4>");
 	}
 
 	public function testAssertBodyHasElement() {
 
-		$this->browser->get("/");
+		S::get("/");
 		$this->assertBodyHasElement("h1", 100);
 	}
 
 	public function testAssertBodyHasNotElement() {
 
-		$this->browser->get("/");
+		S::get("/");
 		$this->assertBodyHasNotElement("h5", 100);
 	}
 
 	public function testAssertBodyHasVisibleElement() {
 
-		$this->browser->get("/");
+		S::get("/");
 		$this->assertBodyHasVisibleElement("h1", 100);
 	}
 
 	public function testAassertBodyHasNotVisibleElement() {
 
-		$this->browser->get("/");
+		S::get("/");
 		$this->assertBodyHasNotVisibleElement(".hidden", 100);
 	}
 
 	public function testAssertElementHasText() {
-		$this->browser->get("/");
+		S::get("/");
 		$this->assertElementHasText("h1", "You");
 	}
 
 	public function testAssertElementHasNotText() {
-		$this->browser->get("/");
+		S::get("/");
 		$this->assertElementHasNotText("h1", "asdasdasdasd");
 	}
 }

@@ -122,6 +122,8 @@ return array(
 		'Illuminate\View\ViewServiceProvider',
 		'Illuminate\Workbench\WorkbenchServiceProvider',
 
+		'Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider',
+		'Zizaco\TestCases\SeleniumServiceProvider',
 	),
 
 	/*
@@ -188,6 +190,7 @@ return array(
 		'URL'               => 'Illuminate\Support\Facades\URL',
 		'Validator'         => 'Illuminate\Support\Facades\Validator',
 		'View'              => 'Illuminate\Support\Facades\View',
+		'S'					=> 'Zizaco\TestCases\Selenium',
 
 	),
 

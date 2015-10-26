@@ -3,24 +3,28 @@ class SimpleRemoteWebDriverTest extends \Zizaco\TestCases\IntegrationTestCase {
 
 	public function testOpenPage() {
 
-		$this->simple()->get("/");
+		S::get("/");
 	}
 
 	public function testClick() {
 
-		$this->simple()->get("/")->click("button");
+		S::get("/");
+		S::click("button");
 		$this->assertBodyHasText("clicked!");
 	}
 
 	public function testCheckCheckbox() {
 
-		$this->simple()->get("/")->click(".checkbox");
+		S::get("/");
+		S::click(".checkbox");
 	}
 
 	public function testType() {
 
-		$this->simple()->get("/")->type("input", "asd");
-		$value = $this->browser->executeScript('return jQuery("input").val()');
+		S::get("/");
+		S::type("input", "asd");
+		S::executeScript('return jQuery("input").val()');
+		$value = S::getLastScriptResponse();
 		$this->assertEquals("asd", $value);
 	}
 
@@ -28,26 +32,32 @@ class SimpleRemoteWebDriverTest extends \Zizaco\TestCases\IntegrationTestCase {
 
 		$file = tempnam('/tmp', "asd");
 
-		$this->simple()->get("/")->type(".input-file", $file);
-		$value = $this->browser->executeScript('return jQuery(".input-file").val()');
+		S::get("/");
+		S::type(".input-file", $file);
+		S::executeScript('return jQuery(".input-file").val()');
+		$value = S::getLastScriptResponse();
 		$this->assertNotEmpty($value);
 	}
 
 	public function testExecuteScript() {
 
-		$response = $this->simple()->get("/")->executeScript("return 1+2;")->lastScriptResponse;
+		S::get("/");
+		S::executeScript("return 1+2;");
+		$response = S::getLastScriptResponse();
 		$this->assertEquals(3, $response);
 	}
 
 	public function testSelect() {
-		$this->simple()->get("/");
+		S::get("/");
 
-		$value = $this->simple()->executeScript("return $('#select-me').val()")->lastScriptResponse;
+		S::executeScript("return $('#select-me').val()");
+		$value = S::getLastScriptResponse();
 		$this->assertEquals(1, $value);
 
-		$this->simple()->select('#select-me', 2);
+		S::select('#select-me', 2);
 
-		$value = $this->simple()->executeScript("return $('#select-me').val()")->lastScriptResponse;
+		S::executeScript("return $('#select-me').val()");
+		$value = S::getLastScriptResponse();
 		$this->assertEquals(2, $value);
 	}
 }

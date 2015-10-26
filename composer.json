@@ -15,7 +15,9 @@
         "facebook/webdriver": "0.5.1"
     },
     "require-dev": {
-        "laravel/framework": "4.2.*"
+        "laravel/framework": "4.2.*",
+	    "phpunit/phpunit": "4.8.*",
+        "barryvdh/laravel-ide-helper": "1.*"
     },
     "suggest": {
         "mockery/mockery": "Mockery is a simple yet flexible PHP mock object framework",
@@ -32,10 +34,14 @@
     "scripts": {
         "post-install-cmd": [
             "php artisan clear-compiled",
+            "php artisan ide-helper:generate",
+            "php artisan ide-helper:meta",
             "php artisan optimize"
         ],
         "post-update-cmd": [
             "php artisan clear-compiled",
+            "php artisan ide-helper:generate",
+            "php artisan ide-helper:meta",
             "php artisan optimize"
         ]
     },

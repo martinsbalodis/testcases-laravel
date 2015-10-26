@@ -363,7 +363,7 @@ class Container implements ArrayAccess
     }
     public function offsetUnset($key)
     {
-        unset($this->bindings[$key], $this->instances[$key]);
+        unset($this->bindings[$key], $this->instances[$key], $this->resolved[$key]);
     }
     public function __get($key)
     {
@@ -423,7 +423,7 @@ use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 class Application extends Container implements HttpKernelInterface, TerminableInterface, ResponsePreparerInterface
 {
-    const VERSION = '4.2.16';
+    const VERSION = '4.2.17';
     protected $booted = false;
     protected $bootingCallbacks = array();
     protected $bootedCallbacks = array();
@@ -1138,7 +1138,11 @@ class Request extends SymfonyRequest
         if ($request instanceof static) {
             return $request;
         }
-        return (new static())->duplicate($request->query->all(), $request->request->all(), $request->attributes->all(), $request->cookies->all(), $request->files->all(), $request->server->all());
+        $content = $request->content;
+        $request = (new static())->duplicate($request->query->all(), $request->request->all(), $request->attributes->all(), $request->cookies->all(), $request->files->all(), $request->server->all());
+        $request->content = $content;
+        $request->request = $request->getInputSource();
+        return $request;
     }
     public function session()
     {
@@ -1351,7 +1355,7 @@ class Request
             $dup->attributes->set('_format', $this->get('_format'));
         }
         if (!$dup->getRequestFormat(null)) {
-            $dup->setRequestFormat($format = $this->getRequestFormat(null));
+            $dup->setRequestFormat($this->getRequestFormat(null));
         }
         return $dup;
     }
@@ -1485,7 +1489,7 @@ class Request
     public function getClientIps()
     {
         $ip = $this->server->get('REMOTE_ADDR');
-        if (!self::$trustedProxies) {
+        if (!$this->isFromTrustedProxy()) {
             return array($ip);
         }
         if (!self::$trustedHeaders[self::HEADER_CLIENT_IP] || !$this->headers->has(self::$trustedHeaders[self::HEADER_CLIENT_IP])) {
@@ -1540,7 +1544,7 @@ class Request
     }
     public function getPort()
     {
-        if (self::$trustedProxies) {
+        if ($this->isFromTrustedProxy()) {
             if (self::$trustedHeaders[self::HEADER_CLIENT_PORT] && ($port = $this->headers->get(self::$trustedHeaders[self::HEADER_CLIENT_PORT]))) {
                 return $port;
             }
@@ -1616,7 +1620,7 @@ class Request
     }
     public function isSecure()
     {
-        if (self::$trustedProxies && self::$trustedHeaders[self::HEADER_CLIENT_PROTO] && ($proto = $this->headers->get(self::$trustedHeaders[self::HEADER_CLIENT_PROTO]))) {
+        if ($this->isFromTrustedProxy() && self::$trustedHeaders[self::HEADER_CLIENT_PROTO] && ($proto = $this->headers->get(self::$trustedHeaders[self::HEADER_CLIENT_PROTO]))) {
             return in_array(strtolower(current(explode(',', $proto))), array('https', 'on', 'ssl', '1'));
         }
         $https = $this->server->get('HTTPS');
@@ -1624,7 +1628,7 @@ class Request
     }
     public function getHost()
     {
-        if (self::$trustedProxies && self::$trustedHeaders[self::HEADER_CLIENT_HOST] && ($host = $this->headers->get(self::$trustedHeaders[self::HEADER_CLIENT_HOST]))) {
+        if ($this->isFromTrustedProxy() && self::$trustedHeaders[self::HEADER_CLIENT_HOST] && ($host = $this->headers->get(self::$trustedHeaders[self::HEADER_CLIENT_HOST]))) {
             $elements = explode(',', $host);
             $host = $elements[count($elements) - 1];
         } elseif (!($host = $this->headers->get('HOST'))) {
@@ -1984,6 +1988,10 @@ class Request
             return $request;
         }
         return new static($query, $request, $attributes, $cookies, $files, $server, $content);
+    }
+    private function isFromTrustedProxy()
+    {
+        return self::$trustedProxies && IpUtils::checkIp($this->server->get('REMOTE_ADDR'), self::$trustedProxies);
     }
 }
 namespace Symfony\Component\HttpFoundation;
@@ -3595,14 +3603,15 @@ class Str
     }
     public static function snake($value, $delimiter = '_')
     {
-        if (isset(static::$snakeCache[$value . $delimiter])) {
-            return static::$snakeCache[$value . $delimiter];
+        $key = $value . $delimiter;
+        if (isset(static::$snakeCache[$key])) {
+            return static::$snakeCache[$key];
         }
         if (!ctype_lower($value)) {
             $replace = '$1' . $delimiter . '$2';
             $value = strtolower(preg_replace('/(.)([A-Z])/', $replace, $value));
         }
-        return static::$snakeCache[$value . $delimiter] = $value;
+        return static::$snakeCache[$key] = $value;
     }
     public static function startsWith($haystack, $needles)
     {
@@ -3615,11 +3624,12 @@ class Str
     }
     public static function studly($value)
     {
-        if (isset(static::$studlyCache[$value])) {
-            return static::$studlyCache[$value];
+        $key = $value;
+        if (isset(static::$studlyCache[$key])) {
+            return static::$studlyCache[$key];
         }
         $value = ucwords(str_replace(array('-', '_'), ' ', $value));
-        return static::$studlyCache[$value] = str_replace(' ', '', $value);
+        return static::$studlyCache[$key] = str_replace(' ', '', $value);
     }
 }
 namespace Symfony\Component\Debug;
@@ -4855,6 +4865,9 @@ class Router implements HttpKernelInterface, RouteFiltererInterface
     protected function getGroupResourceName($prefix, $resource, $method)
     {
         $group = str_replace('/', '.', $this->getLastGroupPrefix());
+        if (empty($group)) {
+            return trim("{$prefix}{$resource}.{$method}", '.');
+        }
         return trim("{$prefix}{$group}.{$resource}.{$method}", '.');
     }
     public function getResourceWildcard($value)
@@ -8736,6 +8749,7 @@ class Logger implements LoggerInterface
     public function pushHandler(HandlerInterface $handler)
     {
         array_unshift($this->handlers, $handler);
+        return $this;
     }
     public function popHandler()
     {
@@ -8743,6 +8757,14 @@ class Logger implements LoggerInterface
             throw new \LogicException('You tried to pop from an empty handler stack.');
         }
         return array_shift($this->handlers);
+    }
+    public function setHandlers(array $handlers)
+    {
+        $this->handlers = array();
+        foreach (array_reverse($handlers) as $handler) {
+            $this->pushHandler($handler);
+        }
+        return $this;
     }
     public function getHandlers()
     {
@@ -8754,6 +8776,7 @@ class Logger implements LoggerInterface
             throw new \InvalidArgumentException('Processors must be valid callables (callback or object with an __invoke method), ' . var_export($callback, true) . ' given');
         }
         array_unshift($this->processors, $callback);
+        return $this;
     }
     public function popProcessor()
     {
@@ -8856,9 +8879,7 @@ class Logger implements LoggerInterface
     }
     public function log($level, $message, array $context = array())
     {
-        if (is_string($level) && defined(__CLASS__ . '::' . strtoupper($level))) {
-            $level = constant(__CLASS__ . '::' . strtoupper($level));
-        }
+        $level = static::toMonologLevel($level);
         return $this->addRecord($level, $message, $context);
     }
     public function debug($message, array $context = array())
@@ -8908,6 +8929,10 @@ class Logger implements LoggerInterface
     public function emergency($message, array $context = array())
     {
         return $this->addRecord(static::EMERGENCY, $message, $context);
+    }
+    public static function setTimezone(\DateTimeZone $tz)
+    {
+        self::$timezone = $tz;
     }
 }
 namespace Psr\Log;
@@ -9047,6 +9072,7 @@ class StreamHandler extends AbstractProcessingHandler
     private $errorMessage;
     protected $filePermission;
     protected $useLocking;
+    private $dirCreated;
     public function __construct($stream, $level = Logger::DEBUG, $bubble = true, $filePermission = null, $useLocking = false)
     {
         parent::__construct($level, $bubble);
@@ -9073,6 +9099,7 @@ class StreamHandler extends AbstractProcessingHandler
             if (!$this->url) {
                 throw new \LogicException('Missing stream url, the stream can not be opened. This may be caused by a premature call to close().');
             }
+            $this->createDir();
             $this->errorMessage = null;
             set_error_handler(array($this, 'customErrorHandler'));
             $this->stream = fopen($this->url, 'a');
@@ -9095,7 +9122,35 @@ class StreamHandler extends AbstractProcessingHandler
     }
     private function customErrorHandler($code, $msg)
     {
-        $this->errorMessage = preg_replace('{^fopen\\(.*?\\): }', '', $msg);
+        $this->errorMessage = preg_replace('{^(fopen|mkdir)\\(.*?\\): }', '', $msg);
+    }
+    private function getDirFromStream($stream)
+    {
+        $pos = strpos($stream, '://');
+        if ($pos === false) {
+            return dirname($stream);
+        }
+        if ('file://' === substr($stream, 0, 7)) {
+            return dirname(substr($stream, 7));
+        }
+        return;
+    }
+    private function createDir()
+    {
+        if ($this->dirCreated) {
+            return;
+        }
+        $dir = $this->getDirFromStream($this->url);
+        if (null !== $dir && !is_dir($dir)) {
+            $this->errorMessage = null;
+            set_error_handler(array($this, 'customErrorHandler'));
+            $status = mkdir($dir, 511, true);
+            restore_error_handler();
+            if (false === $status) {
+                throw new \UnexpectedValueException(sprintf('There is no existing directory at "%s" and its not buildable: ' . $this->errorMessage, $dir));
+            }
+        }
+        $this->dirCreated = true;
     }
 }
 namespace Monolog\Handler;
@@ -9162,6 +9217,7 @@ class RotatingFileHandler extends StreamHandler
                 unlink($file);
             }
         }
+        $this->mustRotate = false;
     }
     protected function getTimedFilename()
     {
@@ -10818,6 +10874,7 @@ class Run
             $this->writeToOutputNow($output);
         }
         if ($willQuit) {
+            flush();
             die(1);
         }
         return $output;
@@ -10832,13 +10889,15 @@ class Run
                     return true;
                 }
             }
-            $exception = new ErrorException($message, $level, 0, $file, $line);
+            $exception = new ErrorException($message, $level, $level, $file, $line);
             if ($this->canThrowExceptions) {
                 throw $exception;
             } else {
                 $this->handleException($exception);
             }
+            return true;
         }
+        return false;
     }
     public function handleShutdown()
     {

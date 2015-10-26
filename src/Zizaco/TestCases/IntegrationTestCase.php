@@ -3,63 +3,37 @@
 use Config, App;
 use DesiredCapabilities;
 use ReflectionClass;
+use S;
 
-abstract class IntegrationTestCase extends \TestCase
-{
-    static protected $seleniumLaunched = false;
+abstract class IntegrationTestCase extends \TestCase {
 
-    static protected $serverLaunched = false;
+    public static function setUpBeforeClass() {
 
-    static protected $loadedBrowser = null;
+        parent::setUpBeforeClass();
+        // launch selenium server
+        SeleniumServer::getInstance()->launchServer();
 
-    static protected $seleniumOptions = null;
-
-    static protected $serverOutputPath = null;
-
-    /**
-     * @var RemoteWebDriver
-     */
-    public $browser;
-
-    /**
-     * Get the simplified page client
-     * @return SimpleRemoteWebDriver
-     */
-    public function simple() {
-        return new SimpleRemoteWebDriver($this->browser);
+        // launch web server
+        WebServer::getInstance()->launchServer();
     }
 
-    public static function setSeleniumOptions($options)
-    {
-        self::$seleniumOptions = $options;
+    public static function tearDownAfterClass() {
+
+        // stop web server
+        WebServer::getInstance()->killServer();
+
+        S::closeBrowser();
+        parent::tearDownAfterClass();
     }
 
-    public static function setUpBeforeClass()
-    {
-        static::launchSelenium();
-        static::launchServer();
-    }
-
-    public static function tearDownAfterClass()
-    {
-        static::killServer();
-        if(IntegrationTestCase::$loadedBrowser)
-        {
-            IntegrationTestCase::$loadedBrowser->close();
-            IntegrationTestCase::$loadedBrowser = null;
-        }
-    }
-
-    public function setUp()
-    {
+    public function setUp() {
         parent::setUp();
-
-        $this->startbrowser();
+        S::startbrowser();
     }
 
     public function assertBodyHasText($needle)
     {
-        $text = $this->browser->getBodyText();
+        $text = S::getBodyText();
 
         $needle = (array)$needle;
 
@@ -70,7 +44,7 @@ abstract class IntegrationTestCase extends \TestCase
 
     public function assertBodyHasNotText($needle)
     {
-        $text = $this->browser->getBodyText();
+        $text = S::getBodyText();
 
         $needle = (array)$needle;
 
@@ -81,7 +55,7 @@ abstract class IntegrationTestCase extends \TestCase
 
     public function assertElementHasText($cssSelector, $needle)
     {
-        $text = $this->browser->findElementByjQuery($cssSelector)->getText();
+        $text = S::css($cssSelector)->getText();
 
         $needle = (array)$needle;
 
@@ -92,7 +66,7 @@ abstract class IntegrationTestCase extends \TestCase
 
     public function assertElementHasNotText($cssSelector, $needle)
     {
-        $text = $this->browser->findElementByjQuery($cssSelector)->getText();
+        $text = S::css($cssSelector)->getText();
 
         $needle = (array)$needle;
 
@@ -103,7 +77,7 @@ abstract class IntegrationTestCase extends \TestCase
 
     public function assertBodyHasHtml($needle)
     {
-        $html = str_replace("\n", '', $this->browser->getHtmlSource());
+        $html = str_replace("\n", '', S::getHtmlSource());
 
         $needle = (array)$needle;
 
@@ -114,7 +88,7 @@ abstract class IntegrationTestCase extends \TestCase
 
     public function assertBodyHasNotHtml($needle)
     {
-        $html = str_replace("\n", '', $this->browser->getHtmlSource());
+        $html = str_replace("\n", '', S::getHtmlSource());
 
         $needle = (array)$needle;
 
@@ -125,7 +99,7 @@ abstract class IntegrationTestCase extends \TestCase
 
     public function assertLocation($location)
     {
-        $current_location = substr($this->browser->getLocation(), strlen($location)*-1);
+        $current_location = substr(S::getLocation(), strlen($location)*-1);
         $pattern = '/^(http:)?\/\/(localhost)(:)?\d*(.*)/';
 
         preg_match($pattern, $current_location, $current_matches);
@@ -140,7 +114,7 @@ abstract class IntegrationTestCase extends \TestCase
     public function assertBodyHasElement($cssSelector, $timeout = 5000) {
 
         try {
-            $this->browser->waitForElementPresent($cssSelector, $timeout);
+            S::waitForElementPresent($cssSelector, $timeout);
             $this->assertTrue(true, "Element found");
         }
         catch(TimeOutException $e) {
@@ -151,7 +125,7 @@ abstract class IntegrationTestCase extends \TestCase
     public function assertBodyHasNotElement($cssSelector, $timeout = 5000) {
 
         try {
-            $this->browser->waitForElementNotPresent($cssSelector, $timeout);
+            S::waitForElementNotPresent($cssSelector, $timeout);
             $this->assertTrue(true, "Element not found");
         }
         catch(TimeOutException $e) {
@@ -162,7 +136,7 @@ abstract class IntegrationTestCase extends \TestCase
 	public function assertBodyHasVisibleElement($cssSelector, $timeout = 5000) {
 
 		try {
-			$this->browser->waitForElementVisible($cssSelector, $timeout);
+			S::waitForElementVisible($cssSelector, $timeout);
 			$this->assertTrue(true, "Element found");
 		}
 		catch(TimeOutException $e) {
@@ -173,159 +147,11 @@ abstract class IntegrationTestCase extends \TestCase
 	public function assertBodyHasNotVisibleElement($cssSelector, $timeout = 5000) {
 
 		try {
-			$this->browser->waitForElementNotVisible($cssSelector, $timeout);
+			S::waitForElementNotVisible($cssSelector, $timeout);
 			$this->assertTrue(true, "Element found");
 		}
 		catch(TimeOutException $e) {
 			$this->fail("Element is still visible. ");
 		}
 	}
-
-    protected function startBrowser()
-    {
-//        // Set the Application URL containing the port of the test server
-//        Config::set(
-//            'app.url',
-//            'http://localhost:4443'
-//        );
-        App::setRequestForConsoleEnvironment(); // This is a must
-
-        if(! IntegrationTestCase::$loadedBrowser)
-        {
-            $capabilities = DesiredCapabilities::firefox();
-            $this->browser = RemoteWebDriver::create('http://localhost:4444/wd/hub', $capabilities);
-
-            IntegrationTestCase::$loadedBrowser = $this->browser;
-        }
-        else
-        {
-            $this->browser = IntegrationTestCase::$loadedBrowser;
-
-            // reset selenium session
-            $this->browser->manage()->deleteAllCookies();
-
-            $this->browser = IntegrationTestCase::$loadedBrowser;
-            $this->browser->get('/');
-        }
-        
-    }
-
-    protected static function launchSelenium()
-    {
-
-        if(IntegrationTestCase::$seleniumLaunched)
-            return;
-        $socket = @fsockopen('localhost', 4444);
-        if($socket == false)
-        {
-            $seleniumFound = false;
-            $seleniumDir = $_SERVER['HOME'].'/.selenium';
-            $files = scandir($seleniumDir);
-
-            foreach ($files as $file) {
-                if(substr($file,-4) == '.jar')
-                {
-                    $command = "java -jar $seleniumDir/$file";
-                    if ( self::$seleniumOptions ) {
-                        $command .= " " . self::$seleniumOptions;
-                    }
-                    static::execAsyncAndWaitFor($command, 'org.openqa.jetty.jetty.Server');
-                    $seleniumFound = true;
-                    break;
-                }
-            }
-
-            if(! $seleniumFound)
-                trigger_error(
-                    "Selenium not found. Please run the selenium server (in port 4444) or place the selenium ".
-                    ".jar file in the '.selenium' directory within your home directory. For example: ".
-                    "'~/.selenium/anySeleniumName-ver0.jar'"
-                );
-        }
-
-        IntegrationTestCase::$seleniumLaunched = true;
-    }
-
-    protected static function launchServer()
-    {
-        if(IntegrationTestCase::$serverLaunched)
-            return;
-
-        // making sure that the artisan can be found when tests are run with
-        // phpunit, IDE or within development environment
-        $reflector = new ReflectionClass("\\Illuminate\\Foundation\\Testing\\TestCase");
-        $fn = $reflector->getFileName();
-        $testCaseDir = dirname($fn);
-        $artisanDir = $testCaseDir = $testCaseDir."/../../../../../../../";
-
-        $artisan = $artisanDir."artisan";
-        // before starting kill previous process if exists
-        static::killProcessByPort('4443');
-        $command = "php $artisan serve --port 4443";
-        $command = "(export TESTCASES_LARAVEL=1; $command)";
-        $outputPath = static::execAsyncAndWaitFor($command, 'development server started');
-
-        IntegrationTestCase::$serverOutputPath = $outputPath;
-        IntegrationTestCase::$serverLaunched = true;
-    }
-
-    protected static function killSelenium()
-    {
-        static::killProcessByPort('4444');
-        IntegrationTestCase::$seleniumLaunched = false;
-    }
-
-    protected static function killServer()
-    {
-        // print everything that was returned by server
-        $output = file_get_contents(IntegrationTestCase::$serverOutputPath);
-        echo $output;
-        IntegrationTestCase::$serverOutputPath = null;
-
-        static::killProcessByPort('4443');
-        IntegrationTestCase::$serverLaunched = false;
-    }
-
-    private static function execAsync($command, $output_path = '/dev/null')
-    {
-        $force_async = " > $output_path 2>&1 &";
-        exec($command.$force_async);
-    }
-
-    private static function execAsyncAndWaitFor($command, $content, $timeout = 30)
-    {
-        $output_path = "/tmp/zizaco-".str_shuffle(MD5(microtime()));
-        self::execAsync($command, $output_path);
-        self::waitForOutput($output_path, $content, $timeout);
-        return $output_path;
-    }
-    private static function waitForOutput($file, $output) {
-        $found = FALSE;
-        $max_tries = 30;
-        $num_tries = 0;
-        while ( !$found ) {
-            $contents = file_get_contents($file);
-            // var_dump($contents);
-            if ( strstr($contents, $output) ) {
-                $found = TRUE;
-            } else {
-                if ( ++$num_tries > $max_tries ) {
-                    throw new \Exception("Failed to find $output in $file");
-                }
-                sleep(1);
-            }
-        }
-    }
-
-    private static function killProcessByPort($port)
-    {
-        $processInfo = exec("lsof -i :$port");
-        preg_match('/^\S+\s*(\d+)/', $processInfo, $matches);
-
-        if(isset($matches[1]))
-        {
-            $pid = $matches[1];
-            exec("kill $pid");
-        }
-    }
 }
