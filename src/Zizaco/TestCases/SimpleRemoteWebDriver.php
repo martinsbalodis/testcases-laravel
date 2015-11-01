@@ -251,8 +251,7 @@ class SimpleRemoteWebDriver {
 
 	public function get($url) {
 
-		$urlBase = Config::get("app.url");
-		$this->webDriver->get($urlBase.$url);
+		$this->webDriver->get("http://localhost:4443".$url);
 	}
 
 	public function getBodyText() {
