@@ -285,7 +285,7 @@ class SimpleRemoteWebDriver {
 
 	public function startbrowser() {
 
-		App::setRequestForConsoleEnvironment(); // This is a must
+//		App::setRequestForConsoleEnvironment(); // This is a must
 
 		if(!$this->webDriver) {
 			$capabilities = DesiredCapabilities::firefox();
