@@ -40,13 +40,13 @@ class WebServer {
 		$reflector = new ReflectionClass("\\Illuminate\\Foundation\\Testing\\TestCase");
 		$fn = $reflector->getFileName();
 		$testCaseDir = dirname($fn);
-		$artisanDir = $testCaseDir = $testCaseDir."/../../../../../../../";
+		$artisanDir = realpath($testCaseDir."/../../../../../../../").'/';
 
 		$artisan = $artisanDir."artisan";
 		// before starting kill previous process if exists
 		Process::killProcessByPort('4443');
 		$command = "php $artisan serve --port 4443";
-		$command = "(export TESTCASES_LARAVEL=1; $command)";
+		$command = "(export SESSION_DRIVER=file; $command)";
 		$outputPath = Process::execAsyncAndWaitFor($command, 'development server started');
 
 		$this->serverOutputPath = $outputPath;

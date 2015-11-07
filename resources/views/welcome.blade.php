@@ -49,6 +49,11 @@
     </select>
     <input type="checkbox" class="checkbox">
     <div class="hidden" style="display:none">asd</div>
+
+    <form method="post" action="/">
+        <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
+        <input type="submit" class="form-submit" value="submit">
+    </form>
 </div>
 </body>
 </html>

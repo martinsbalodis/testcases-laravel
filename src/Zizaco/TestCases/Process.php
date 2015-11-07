@@ -25,7 +25,8 @@ class Process {
 	private static function execAsync($command, $output_path = '/dev/null')
 	{
 		$force_async = " > $output_path 2>&1 &";
-		exec($command.$force_async);
+		$cmd = "/bin/bash -c '$command'".$force_async;
+		exec($cmd);
 	}
 
 	private static function waitForOutput($file, $output, $timeout=0) {

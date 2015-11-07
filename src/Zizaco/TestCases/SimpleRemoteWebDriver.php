@@ -287,7 +287,7 @@ class SimpleRemoteWebDriver {
 //		App::setRequestForConsoleEnvironment(); // This is a must
 
 		if(!$this->webDriver) {
-			$capabilities = DesiredCapabilities::firefox();
+			$capabilities = DesiredCapabilities::chrome();
 			$this->webDriver = RemoteWebDriver::create('http://localhost:4444/wd/hub', $capabilities);
 		}
 		else {

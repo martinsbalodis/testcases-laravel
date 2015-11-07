@@ -60,4 +60,11 @@ class SimpleRemoteWebDriverTest extends \Zizaco\TestCases\IntegrationTestCase {
 		$value = S::getLastScriptResponse();
 		$this->assertEquals(2, $value);
 	}
+
+	public function testFormSubmit() {
+
+		S::get("/");
+		S::click(".form-submit");
+		$this->assertBodyHasText("You have arrived");
+	}
 }
