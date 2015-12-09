@@ -6,6 +6,11 @@ class SimpleRemoteWebDriverTest extends \Zizaco\TestCases\IntegrationTestCase {
 		S::get("/");
 	}
 
+	public function testOpenPageViaRoute() {
+
+		S::route('index');
+	}
+
 	public function testClick() {
 
 		S::get("/");

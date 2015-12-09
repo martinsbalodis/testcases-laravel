@@ -254,6 +254,11 @@ class SimpleRemoteWebDriver {
 		$this->webDriver->get("http://localhost:4443".$url);
 	}
 
+	public function route($name, $parameters = [], $absolute = false, $route = null) {
+		$url = route($name, $parameters, $absolute, $route);
+		$this->get($url);
+	}
+
 	public function getBodyText() {
 		$text = $this->webDriver->findElement(WebDriverBy::cssSelector('body'))->getText();
 		return $text;
