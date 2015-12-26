@@ -33,6 +33,16 @@ class SimpleRemoteWebDriverTest extends \Zizaco\TestCases\IntegrationTestCase {
 		$this->assertEquals("asd", $value);
 	}
 
+	public function testTypeQuotes() {
+
+		S::get("/");
+		$input = '"asdasd"';
+		S::type("input", $input);
+		S::executeScript('return jQuery("input").val()');
+		$value = S::getLastScriptResponse();
+		$this->assertEquals($input, $value);
+	}
+
 	public function testTypeIntoFileInput() {
 
 		$file = tempnam('/tmp', "asd");
