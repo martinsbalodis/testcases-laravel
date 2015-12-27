@@ -1,9 +1,12 @@
 <?php namespace Zizaco\TestCases;
 use App;
+use Auth;
 use Config;
+use Crypt;
 use DesiredCapabilities;
 use NoSuchElementException;
 use RemoteWebElement;
+use Session;
 use UnknownServerException;
 use WebDriverBy;
 use WebDriverSelect;
@@ -44,6 +47,13 @@ class SimpleRemoteWebDriver {
 	protected $lastScriptResponse = null;
 
 	/**
+	 * This url will be opened when a authenticated session cookie needs to be added.
+	 * You should make this url return an empty page
+	 * @var string
+	 */
+	protected $preLoginUrl = '/';
+
+	/**
 	 * @var RemoteWebDriver
 	 */
 	protected $webDriver;
@@ -61,6 +71,10 @@ class SimpleRemoteWebDriver {
 //		$this->webDriver->get($path);
 //		return $this;
 //	}
+
+	public function setPreLoginUrl($url) {
+		$this->preLoginUrl = $url;
+	}
 
 	/**
 	 * Click on an element and wait for ajax
@@ -285,6 +299,31 @@ class SimpleRemoteWebDriver {
 	 */
 	public function css($selector) {
 		return $this->webDriver->findElementByjQuery($selector);
+	}
+
+	/**
+	 * Login Laravel user. (Sets session cookie in browser)
+	 * @param $user
+	 */
+	public function login($user) {
+
+		// selenium only allows setting cookie when the expected domain is open
+		$this->get($this->preLoginUrl);
+		$sessionCookieName = Config::get('session.cookie');
+
+		// login user
+		Session::start();
+		Auth::login($user);
+		Session::save();
+
+		// update browsers session cookie to match legged in session
+		$sessionId = Session::getId();
+		$this->webDriver->manage()->addCookie([
+			'name' => $sessionCookieName,
+			'value' => Crypt::encrypt($sessionId),
+			'path' => '/',
+			'domain' => 'localhost',
+		]);
 	}
 
 	public function startbrowser() {

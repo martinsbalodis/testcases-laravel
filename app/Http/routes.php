@@ -15,6 +15,14 @@ Route::get('/', ['as' => 'index', function () {
     return view('welcome');
 }]);
 
+Route::get('/login', ['as' => 'login', function () {
+
+    $user = factory(\App\SeleniumTestUser::class)->create();
+    Auth::login($user);
+
+    return redirect('/');
+}]);
+
 Route::post('/', function () {
     return view('welcome');
 });

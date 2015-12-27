@@ -1,4 +1,6 @@
 <?php
+use App\SeleniumTestUser;
+
 class SimpleRemoteWebDriverTest extends \Zizaco\TestCases\IntegrationTestCase {
 
 	public function testOpenPage() {
@@ -41,6 +43,14 @@ class SimpleRemoteWebDriverTest extends \Zizaco\TestCases\IntegrationTestCase {
 		S::executeScript('return jQuery("input").val()');
 		$value = S::getLastScriptResponse();
 		$this->assertEquals($input, $value);
+	}
+
+	public function testLogin() {
+
+		$user = factory(SeleniumTestUser::class)->create();
+		S::login($user);
+		S::get('/');
+		$this->assertBodyHasText('authenticated');
 	}
 
 	public function testTypeIntoFileInput() {
