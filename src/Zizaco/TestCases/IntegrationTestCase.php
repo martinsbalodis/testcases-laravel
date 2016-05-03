@@ -229,7 +229,7 @@ abstract class IntegrationTestCase extends \TestCase
                     if ( self::$seleniumOptions ) {
                         $command .= " " . self::$seleniumOptions;
                     }
-                    static::execAsyncAndWaitFor($command, 'org.openqa.jetty.jetty.Server');
+                    static::execAsyncAndWaitFor($command, 'Selenium Server is up and running');
                     $seleniumFound = true;
                     break;
                 }
