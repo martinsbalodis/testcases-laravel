@@ -58,7 +58,7 @@ class SeleniumServer {
 					if ( $this->seleniumOptions ) {
 						$command .= " " . $this->seleniumOptions;
 					}
-					Process::execAsyncAndWaitFor($command, 'org.openqa.jetty.jetty.Server');
+					Process::execAsyncAndWaitFor($command, 'Selenium Server is up and running');
 					$seleniumFound = true;
 					break;
 				}
