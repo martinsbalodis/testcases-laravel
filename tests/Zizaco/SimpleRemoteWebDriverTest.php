@@ -1,7 +1,8 @@
 <?php
 use App\SeleniumTestUser;
+use Zizaco\TestCases\IntegrationTestCase;
 
-class SimpleRemoteWebDriverTest extends \Zizaco\TestCases\IntegrationTestCase {
+class SimpleRemoteWebDriverTest extends IntegrationTestCase {
 
 	public function testOpenPage() {
 

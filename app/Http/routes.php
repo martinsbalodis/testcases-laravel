@@ -12,6 +12,7 @@
 */
 
 Route::get('/', ['as' => 'index', function () {
+    Auth::check();
     return view('welcome');
 }]);
 

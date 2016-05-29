@@ -7,20 +7,12 @@ use S;
 
 abstract class IntegrationTestCase extends \TestCase {
 
-    public static function setUpBeforeClass() {
-
-        parent::setUpBeforeClass();
-        // launch selenium server
-        SeleniumServer::getInstance()->launchServer();
-
-        // launch web server
-        WebServer::getInstance()->launchServer();
-    }
-
     public static function tearDownAfterClass() {
 
         // stop web server
         WebServer::getInstance()->killServer();
+
+        SeleniumServer::getInstance()->stopForwardWebServerViaSSH();
 
         S::closeBrowser();
         parent::tearDownAfterClass();
@@ -28,6 +20,14 @@ abstract class IntegrationTestCase extends \TestCase {
 
     public function setUp() {
         parent::setUp();
+
+        // launch selenium server
+        SeleniumServer::getInstance()->launchServer();
+        SeleniumServer::getInstance()->forwardWebServerViaSSH();
+
+        // launch web server
+        WebServer::getInstance()->launchServer();
+
         S::startbrowser();
     }
 

@@ -265,7 +265,8 @@ class SimpleRemoteWebDriver {
 
 	public function get($url) {
 
-		$this->webDriver->get("http://localhost:4443".$url);
+		$config = Config::get('selenium.webserver');
+		$this->webDriver->get("http://{$config['host']}:{$config['port']}".$url);
 	}
 
 	public function route($name, $parameters = [], $absolute = false, $route = null) {
@@ -330,9 +331,10 @@ class SimpleRemoteWebDriver {
 
 //		App::setRequestForConsoleEnvironment(); // This is a must
 
+		$config = Config::get('selenium.selenium');
 		if(!$this->webDriver) {
 			$capabilities = DesiredCapabilities::firefox();
-			$this->webDriver = RemoteWebDriver::create('http://localhost:4444/wd/hub', $capabilities);
+			$this->webDriver = RemoteWebDriver::create('http://'.$config['host'].':'.$config['port'].'/wd/hub', $capabilities);
 		}
 		else {
 			// reset selenium session

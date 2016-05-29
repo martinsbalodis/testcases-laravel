@@ -3,6 +3,9 @@
 namespace Zizaco\TestCases;
 
 
+use Config;
+use Symfony\Component\Process\Process as SymfonyProcess;
+
 class SeleniumServer {
 
 	/**
@@ -32,6 +35,8 @@ class SeleniumServer {
 
 	protected $seleniumLaunched = false;
 
+	protected $portForwardedViaSSH = false;
+
 	protected $seleniumOptions = null;
 
 	public function setSeleniumOptions($options) {
@@ -41,6 +46,11 @@ class SeleniumServer {
 	public function launchServer() {
 
 		if($this->seleniumLaunched) {
+			return;
+		}
+
+		$runLocally = Config::get('selenium.selenium.run_locally');
+		if(!$runLocally) {
 			return;
 		}
 
@@ -58,7 +68,7 @@ class SeleniumServer {
 					if ( $this->seleniumOptions ) {
 						$command .= " " . $this->seleniumOptions;
 					}
-					Process::execAsyncAndWaitFor($command, 'org.openqa.jetty.jetty.Server');
+					Process::execAsyncAndWaitFor($command, 'Selenium Server is up and running');
 					$seleniumFound = true;
 					break;
 				}
@@ -73,6 +83,50 @@ class SeleniumServer {
 		}
 
 		$this->seleniumLaunched = true;
+	}
+
+	private function getForwardWebServerViaSSHCommand() {
+
+		$config = Config::get('selenium.port_forward');
+
+		$password = $config['password'];
+		$sshPort = $config['port'];
+		$sshUsername = $config['username'];
+		$sshHost = $config['host'];
+		$webserverPort = $config['webserver_port'];
+		$webserverHost = $config['webserver_host'];
+
+		$command = "sshpass -p $password ssh -o ExitOnForwardFailure=yes -N -R 127.0.0.1:$webserverPort:$webserverHost:$webserverPort -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p $sshPort $sshUsername@$sshHost";
+		return $command;
+	}
+
+	public function forwardWebServerViaSSH() {
+
+		if($this->portForwardedViaSSH) {
+			return;
+		}
+
+		// kill previous ssh forward
+		$this->stopForwardWebServerViaSSH();
+
+		$config = Config::get('selenium.port_forward');
+
+		// port forward is disabled
+		if(!$config['enable']) {
+			return;
+		}
+
+		$command = $this->getForwardWebServerViaSSHCommand();
+		Process::execAsync($command, 'Welcome');
+		$this->portForwardedViaSSH = true;
+	}
+
+	public function stopForwardWebServerViaSSH() {
+
+		// will be stoping by finding the pid that should run this command
+		$command = $this->getForwardWebServerViaSSHCommand();
+		Process::killCommand($command);
+		$this->portForwardedViaSSH = false;
 	}
 
 	public function killSelenium() {
