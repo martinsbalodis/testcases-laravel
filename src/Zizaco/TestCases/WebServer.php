@@ -1,5 +1,6 @@
 <?php
 namespace Zizaco\TestCases;
+use Config;
 use ReflectionClass;
 
 class WebServer {
@@ -46,7 +47,14 @@ class WebServer {
 		// before starting kill previous process if exists
 		Process::killProcessByPort('4443');
 		$command = "php $artisan serve --port 4443";
-		$command = "(export SESSION_DRIVER=file; $command)";
+		$envVariables = Config::get('selenium.webserver.env', []);
+		$exports = "";
+		foreach ($envVariables as $envKey => $envVariable) {
+			$envKey = escapeshellcmd($envKey);
+			$envVariable = escapeshellarg($envVariable);
+			$exports .= "export {$envKey}={$envVariable}; ";
+		}
+		$command = "($exports $command)";
 		$outputPath = Process::execAsyncAndWaitFor($command, 'development server started');
 
 		$this->serverOutputPath = $outputPath;

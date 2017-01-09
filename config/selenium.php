@@ -8,6 +8,11 @@ return [
 	'webserver' => [
 		'host' => 'localhost',
 		'port' => '4443',
+		'env' => [
+			'QUEUE_DRIVER' => 'database',
+			'CACHE_DRIVER' => 'file',
+			'SESSION_DRIVER' => 'file',
+		]
 	],
 	/**
 	 * creates an ssh connection to selenium server for port forwarding.
