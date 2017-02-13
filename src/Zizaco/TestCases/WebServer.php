@@ -46,7 +46,7 @@ class WebServer {
 		$artisan = $artisanDir."artisan";
 		// before starting kill previous process if exists
 		Process::killProcessByPort('4443');
-		$command = "php $artisan serve --port 4443";
+		$command = "php $artisan serve --port 4443 --host 0.0.0.0";
 		$envVariables = Config::get('selenium.webserver.env', []);
 		$exports = "";
 		foreach ($envVariables as $envKey => $envVariable) {
