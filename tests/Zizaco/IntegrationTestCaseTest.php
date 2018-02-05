@@ -5,6 +5,7 @@ class IntegrationTestCaseTest extends IntegrationTestCase {
 
 	public function testOpenLandingPage() {
 		S::get("/");
+		$this->assertTrue(true);
 	}
 
 	public function testAssertBodyHasText() {

@@ -7,11 +7,13 @@ class SimpleRemoteWebDriverTest extends IntegrationTestCase {
 	public function testOpenPage() {
 
 		S::get("/");
+		$this->assertTrue(true);
 	}
 
 	public function testOpenPageViaRoute() {
 
 		S::route('index');
+		$this->assertTrue(true);
 	}
 
 	public function testClick() {
@@ -25,6 +27,7 @@ class SimpleRemoteWebDriverTest extends IntegrationTestCase {
 
 		S::get("/");
 		S::click(".checkbox");
+		$this->assertTrue(true);
 	}
 
 	public function testType() {
