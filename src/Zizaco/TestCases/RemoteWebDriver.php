@@ -23,7 +23,7 @@ class RemoteWebDriver extends \RemoteWebDriver {
 
 		// @TODO escape double quotes
 
-		$elements = $this->executeScript('return jQuery("'.$cssSelector.'").get()');
+		$elements = $this->executeScript('if(jQuery !== undefined) { return jQuery("'.$cssSelector.'").get(); } else { return Array.from(document.querySelectorAll("'.$cssSelector.'")); }');
 		if(empty($elements)) {
 			throw new NoSuchElementException("element not found! ".$cssSelector);
 		}

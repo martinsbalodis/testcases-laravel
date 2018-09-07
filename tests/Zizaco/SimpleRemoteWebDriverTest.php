@@ -96,4 +96,13 @@ class SimpleRemoteWebDriverTest extends IntegrationTestCase {
 		S::click(".form-submit");
 		$this->assertBodyHasText("You have arrived");
 	}
+
+	public function testGetElementWithoutJQuery() {
+
+		S::get("/");
+		S::executeScript('window.jQuery = undefined;');
+		S::waitForElementVisible("input");
+
+		$this->addToAssertionCount(1);
+	}
 }

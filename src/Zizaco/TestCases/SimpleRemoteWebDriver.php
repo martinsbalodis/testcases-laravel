@@ -178,7 +178,7 @@ class SimpleRemoteWebDriver {
 	public function waitForAjax($timeout = 5000) {
 
 		$this->webDriver->wait($timeout/1000)->until(function ($driver) {
-			return !$driver->executeScript('return jQuery.active');
+			return !$driver->executeScript('return window.jQuery === undefined?false:jQuery.active');
 		});
 	}
 
