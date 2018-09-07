@@ -349,4 +349,22 @@ class SimpleRemoteWebDriver {
 			$this->webDriver = null;
 		}
 	}
+
+	/**
+	 * Switch to an iframe
+	 *
+	 * @param $idOrName
+	 */
+	public function switchToFrame($idOrName) {
+
+		$this->webDriver->switchTo()->frame("cb-frame");
+	}
+
+	/**
+	 * Switch back to main frame from an iframe
+	 */
+	public function switchToDefaultContent() {
+
+		$this->webDriver->switchTo()->defaultContent();
+	}
 }
