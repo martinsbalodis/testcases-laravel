@@ -141,7 +141,7 @@ class SimpleRemoteWebDriver {
 				}
 			}
 		}
-		$this->executeScript('jQuery("'.$cssSelector.'").trigger("keyup").trigger("change")');
+		$this->executeScript('if(window.jQuery !== undefined) { jQuery("'.$cssSelector.'").trigger("keyup").trigger("change"); } else { Array.from(document.querySelectorAll("'.$cssSelector.'")).forEach((element) => { element.dispatchEvent(new Event("keyup", { bubbles: true })); element.dispatchEvent(new Event("change", { bubbles: true })); }); }');
 		$this->waitForAjax(3e4);
 	}
 
