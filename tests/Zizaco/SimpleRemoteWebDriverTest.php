@@ -99,9 +99,16 @@ class SimpleRemoteWebDriverTest extends IntegrationTestCase {
 
 	public function testGetElementWithoutJQuery() {
 
-		S::get("/");
 		S::executeScript('window.jQuery = undefined;');
 		S::waitForElementVisible("input");
+
+		$this->addToAssertionCount(1);
+	}
+
+	public function testSwitchToFrame() {
+
+		S::get("/");
+		S::switchToFrame("test-frame");
 
 		$this->addToAssertionCount(1);
 	}

@@ -57,6 +57,8 @@
         <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
         <input type="submit" class="form-submit" value="submit">
     </form>
+
+    <iframe id="test-frame"></iframe>
 </div>
 </body>
 </html>
