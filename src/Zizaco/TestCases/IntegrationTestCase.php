@@ -7,7 +7,7 @@ use S;
 
 abstract class IntegrationTestCase extends \TestCase {
 
-    public static function tearDownAfterClass() {
+    public static function tearDownAfterClass(): void {
 
         // stop web server
         WebServer::getInstance()->killServer();
@@ -18,7 +18,7 @@ abstract class IntegrationTestCase extends \TestCase {
         parent::tearDownAfterClass();
     }
 
-    public function setUp() {
+    public function setUp(): void {
         parent::setUp();
 
         // launch selenium server
@@ -31,7 +31,7 @@ abstract class IntegrationTestCase extends \TestCase {
         S::startbrowser();
     }
 
-    public function assertBodyHasText($needle)
+    public function assertBodyHasText($needle): void
     {
         $text = S::getBodyText();
 
@@ -42,7 +42,7 @@ abstract class IntegrationTestCase extends \TestCase {
         }
     }
 
-    public function assertBodyHasNotText($needle)
+    public function assertBodyHasNotText($needle): void
     {
         $text = S::getBodyText();
 
@@ -53,7 +53,7 @@ abstract class IntegrationTestCase extends \TestCase {
         }
     }
 
-    public function assertElementHasText($cssSelector, $needle)
+    public function assertElementHasText($cssSelector, $needle): void
     {
         $text = S::css($cssSelector)->getText();
 
@@ -64,7 +64,7 @@ abstract class IntegrationTestCase extends \TestCase {
         }
     }
 
-    public function assertElementHasNotText($cssSelector, $needle)
+    public function assertElementHasNotText($cssSelector, $needle): void
     {
         $text = S::css($cssSelector)->getText();
 
@@ -75,7 +75,7 @@ abstract class IntegrationTestCase extends \TestCase {
         }
     }
 
-    public function assertBodyHasHtml($needle)
+    public function assertBodyHasHtml($needle): void
     {
         $html = str_replace("\n", '', S::getHtmlSource());
 
@@ -86,7 +86,7 @@ abstract class IntegrationTestCase extends \TestCase {
         }
     }
 
-    public function assertBodyHasNotHtml($needle)
+    public function assertBodyHasNotHtml($needle): void
     {
         $html = str_replace("\n", '', S::getHtmlSource());
 
@@ -97,7 +97,7 @@ abstract class IntegrationTestCase extends \TestCase {
         }
     }
 
-    public function assertLocation($location)
+    public function assertLocation($location): void
     {
         $current_location = substr(S::getLocation(), strlen($location)*-1);
         $pattern = '/^(http:)?\/\/(localhost)(:)?\d*(.*)/';
@@ -111,7 +111,7 @@ abstract class IntegrationTestCase extends \TestCase {
         $this->assertEquals($current_location, $current_location, "The current location ($current_location) is not '$location'");
     }
 
-    public function assertBodyHasElement($cssSelector, $timeout = 5000) {
+    public function assertBodyHasElement($cssSelector, $timeout = 5000): void {
 
         try {
             S::waitForElementPresent($cssSelector, $timeout);
@@ -122,7 +122,7 @@ abstract class IntegrationTestCase extends \TestCase {
         }
     }
 
-    public function assertBodyHasNotElement($cssSelector, $timeout = 5000) {
+    public function assertBodyHasNotElement($cssSelector, $timeout = 5000): void {
 
         try {
             S::waitForElementNotPresent($cssSelector, $timeout);
@@ -133,7 +133,7 @@ abstract class IntegrationTestCase extends \TestCase {
         }
     }
 
-	public function assertBodyHasVisibleElement($cssSelector, $timeout = 5000) {
+	public function assertBodyHasVisibleElement($cssSelector, $timeout = 5000): void {
 
 		try {
 			S::waitForElementVisible($cssSelector, $timeout);
@@ -144,7 +144,7 @@ abstract class IntegrationTestCase extends \TestCase {
 		}
 	}
 
-	public function assertBodyHasNotVisibleElement($cssSelector, $timeout = 5000) {
+	public function assertBodyHasNotVisibleElement($cssSelector, $timeout = 5000): void {
 
 		try {
 			S::waitForElementNotVisible($cssSelector, $timeout);
